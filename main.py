@@ -11,16 +11,18 @@ print('The bot is working')
 session_history_df = pd.DataFrame(columns=['User ID', 'Username', 'Message'])
 session_history = {}
 
-# This is the Function for the /help command
-def help_command(update, context):
-    update.message.reply_text(keys.help)
-
 # This is the Function for the /start command
-def start_command(update, context):
+def start_command(update: Update, context: CallbackContext):
     user_id = update.effective_user.id
     username = update.effective_user.username
     session_history[user_id] = {'username': username, 'history': []}
     update.message.reply_text(keys.start)
+
+# This is the Function for the /help command
+def help_command(update: Update, context: CallbackContext):
+    user_id = update.effective_user.id
+    session_history[user_id]['history'].append(update.message.text)
+    update.message.reply_text(keys.help)
 
 # This is the Function for the /menu command
 def menu_command(update: Update, context: CallbackContext):
@@ -67,7 +69,7 @@ def log_session_history(user_id):
     session_history[user_id]['history'] = []
 
 # Command to handle other responses and log history
-def handle_response(update, text) -> str:
+def handle_response(update: Update, text) -> str:
     user_id = update.effective_user.id
     if keys.send in text:
         log_session_history(user_id)
@@ -75,7 +77,7 @@ def handle_response(update, text) -> str:
     return keys.random_text
 
 # Log errors
-def error(update, context):
+def error(update: Update, context: CallbackContext):
     print(f'Update {update} caused error {context.error}')
 
 # Run the program
